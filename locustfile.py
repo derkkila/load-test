@@ -1,30 +1,78 @@
-import base64
+import resource
 
 from locust import HttpLocust, TaskSet, task
-from random import randint, choice
+from locust.exception import StopLocust
+
+import helpers.helpers as helpers
+import helpers.siteInteractionHelpers as site
+from fake_useragent import UserAgent
+
+ua = UserAgent()
+
+print "To avoid resource exhaustion, attempting to increase number of open files ulimit from {0} to (9999, 9999)".format(resource.getrlimit(resource.RLIMIT_NOFILE))
+resource.setrlimit(resource.RLIMIT_NOFILE, (9999, 9999))
+print "After ulimit update. Current ulimit values are {0}".format(resource.getrlimit(resource.RLIMIT_NOFILE))
+
+class BaseTaskSet(TaskSet):
+    uaString = ""
+
+    def on_start(self):
+        self.uaString = ua.random
 
 
-class WebTasks(TaskSet):
+#Task class for the casual browser
+class CasualBrowserTasks(BaseTaskSet):
+    @task(4)
+    def taskFastBrowseAndLeave(self):
+        site.viewHomepage(self)
+        helpers.think(2, 5)
+        site.viewCatalog(self)
+        helpers.think(2, 5)
 
+    @task(2)
+    def taskThoroughBrowseAndLeave(self):
+        site.viewHomepage(self)
+        helpers.think(2, 5)
+        site.viewCatalog(self)
+        helpers.think(2, 5)
+        site.applyFilter(self)
+        helpers.think(2, 5)
+        site.viewItemDetails(self, "03fef6ac-1896-4ce8-bd69-b798f85c6e0b")
+        helpers.think(5, 10)
+        site.viewCatalog(self)
+        helpers.think(3, 10)
+
+#Task class for the buyer
+class BuyerTasks(BaseTaskSet):
     @task
-    def load(self):
-        base64string = base64.encodestring('%s:%s' % ('user', 'password')).replace('\n', '')
+    def taskBrowseAndBuy(self):
+        item_id = "3395a43e-2d88-40de-b95f-e00e1502085b"
 
-        catalogue = self.client.get("/catalogue").json()
-        category_item = choice(catalogue)
-        item_id = category_item["id"]
+        site.viewHomepage(self)
+        helpers.think(1, 3)
+        site.login(self, "user", "password")
+        helpers.think(1, 1)
+        site.viewCatalog(self)
+        helpers.think(2, 5)
+        site.viewItemDetails(self, item_id)
+        helpers.think(3, 6)
+        site.clearCart(self)
+        site.addItemToCart(self, item_id, 1)
+        helpers.think(0.5, 1)
+        site.viewCart(self)
+        helpers.think(5, 8)
+        site.purchaseCart(self)
+        helpers.think(10, 20)
+        
 
-        self.client.get("/")
-        self.client.get("/login", headers={"Authorization":"Basic %s" % base64string})
-        self.client.get("/category.html")
-        self.client.get("/detail.html?id={}".format(item_id))
-        self.client.delete("/cart")
-        self.client.post("/cart", json={"id": item_id, "quantity": 1})
-        self.client.get("/basket.html")
-        self.client.post("/orders")
+class CasualBrowser(HttpLocust):
+    weight = 5
+    task_set = CasualBrowserTasks
+    min_wait = 1000
+    max_wait = 1000
 
-
-class Web(HttpLocust):
-    task_set = WebTasks
-    min_wait = 0
-    max_wait = 0
+class Buyer(HttpLocust):
+    weight = 2
+    task_set = BuyerTasks
+    min_wait = 1000
+    max_wait = 1000
