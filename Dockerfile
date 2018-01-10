@@ -1,7 +1,7 @@
 FROM python:2.7-wheezy
 
 # Install locust
-RUN pip install pyzmq locustio faker
+RUN pip install pyzmq locustio faker fake-useragent
 
 ADD locustfile.py /config/locustfile.py
 ADD . /usr/local/bin
