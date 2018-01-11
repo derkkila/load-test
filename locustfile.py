@@ -63,7 +63,7 @@ class BuyerTasks(BaseTaskSet):
         helpers.think(5, 8)
         site.purchaseCart(self)
         helpers.think(10, 20)
-        
+
 
 class CasualBrowser(HttpLocust):
     weight = 5
