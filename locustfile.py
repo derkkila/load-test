@@ -15,9 +15,11 @@ print "After ulimit update. Current ulimit values are {0}".format(resource.getrl
 
 class BaseTaskSet(TaskSet):
     uaString = ""
+    identityProvider=""
 
     def on_start(self):
         self.uaString = ua.random
+        self.identityProvider = helpers.weightedChoice([("buttercup_games",1), ("google",5), ("facebook",2)])
 
 
 #Task class for the casual browser

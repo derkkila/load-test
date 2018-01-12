@@ -4,7 +4,7 @@ import os
 import datetime
 
 def think(min_wait_sec, max_wait_sec):
-    if "SKIP THINK" in os.environ:
+    if "SKIP_THINK" in os.environ:
         return
 
     time.sleep(random.uniform(min_wait_sec, max_wait_sec))
@@ -15,11 +15,11 @@ def maybe():
 #Based on the day of week and time of day return a probability based boolean indicating whether or not
 #the run should abort to simulate reduced load against the system
 def shouldIAbort():
-    dayOfWeekProbability = {0:0.9, 1:0.9, 2:0.85, 3:0.8, 4:0.8, 5:0.3, 6:0.3}
-    hourOfDayProbability = {0:0.1, 1:0.1, 2:0.1, 3:0.1, 4:0.1, 5:0.15, 6:0.4,
-                            7:0.6, 8:0.9, 9:0.9, 10:0.9, 11:0.9, 12:0.9, 13:0.9,
-                            14:0.9, 15:0.9, 16:0.9, 17:0.9, 18:0.8, 19:0.4,
-                            20:0.4, 21:0.2, 22:0.2, 23:0.1}
+    #list item 0 is monday, 6 is sunday
+    dayOfWeekProbability = [0.9, 0.9, 0.85, 0.8, 0.8, 0.3, 0.3]
+    #list item 0 is hour 0, 23 is hour 23
+    hourOfDayProbability = [0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.4, 0.6, 0.9, 0.9, 0.9, 0.9,
+                            0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.8, 0.4, 0.4, 0.2, 0.2, 0.1]
 
     dayOfWeek = datetime.datetime.today().weekday()
     if random.uniform(0, 1) > dayOfWeekProbability[dayOfWeek]:
@@ -37,3 +37,13 @@ def getProbabilityCount(max_count):
         if (not shouldIAbort()): actual_count+=1
 
     return actual_count
+
+def weightedChoice(choice_weight_list):
+    total = sum(w for c, w in choice_weight_list)
+    r = random.uniform(0, total)
+    upto = 0
+    for c, w in choice_weight_list:
+        if upto + w >= r:
+            return c
+        upto += w
+    assert False, "Shouldn't get here"

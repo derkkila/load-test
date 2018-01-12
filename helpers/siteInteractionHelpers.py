@@ -11,7 +11,8 @@ def applyFilter(taskSet):
 
 def login(taskSet, username, password):
 	base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
-	taskSet.client.get("/login", headers={"Authorization":"Basic {0}".format(base64string), "User-Agent":taskSet.uaString})
+	taskSet.client.get("/login", headers={"Authorization":"Basic {0}".format(base64string), "User-Agent":taskSet.uaString, "IdentityProvider":taskSet.identityProvider})
+	
 
 def clearCart(taskSet):
 	taskSet.client.delete("/cart", headers={"User-Agent":taskSet.uaString})
