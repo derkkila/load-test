@@ -6,8 +6,8 @@ def viewCatalog(taskSet):
 def viewItemDetails(taskSet, item_id):
 	taskSet.client.get("/detail.html?id={}".format(item_id), headers={"User-Agent":taskSet.uaString})
 
-def applyFilter(taskSet):
-	taskSet.client.get("/category.html?tags=brown", headers={"User-Agent":taskSet.uaString})
+def applyFilter(taskSet, filterTag):
+	taskSet.client.get("/category.html?tags={}".format(filterTag), headers={"User-Agent":taskSet.uaString})
 
 def login(taskSet, username, password):
 	base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')

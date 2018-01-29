@@ -37,12 +37,23 @@ class CasualBrowserTasks(BaseTaskSet):
         helpers.think(2, 5)
         site.viewCatalog(self)
         helpers.think(2, 5)
-        site.applyFilter(self)
+        site.applyFilter(self, "brown")
         helpers.think(2, 5)
         site.viewItemDetails(self, "03fef6ac-1896-4ce8-bd69-b798f85c6e0b")
         helpers.think(5, 10)
         site.viewCatalog(self)
         helpers.think(3, 10)
+
+#Task class for the user who encounters the sport tag defect
+class SportTagDefectEncountererTasks(BaseTaskSet):
+    @task
+    def taskEncounterSportTagDefectAndLeave(self):
+        site.viewHomepage(self)
+        helpers.think(2, 5)
+        site.viewCatalog(self)
+        helpers.think(2, 5)
+        site.applyFilter(self, "sport")
+        helpers.think(7, 10)
 
 #Task class for the buyer
 class BuyerTasks(BaseTaskSet):
@@ -68,13 +79,19 @@ class BuyerTasks(BaseTaskSet):
 
 
 class CasualBrowser(HttpLocust):
-    weight = 5
+    weight = 100*0.75
     task_set = CasualBrowserTasks
     min_wait = 1000
     max_wait = 1000
 
 class Buyer(HttpLocust):
-    weight = 2
+    weight = 100*0.24
     task_set = BuyerTasks
+    min_wait = 1000
+    max_wait = 1000
+
+class SportTagDefectEncounterer(HttpLocust):
+    weight = 100*0.01
+    task_set = SportTagDefectEncountererTasks
     min_wait = 1000
     max_wait = 1000
