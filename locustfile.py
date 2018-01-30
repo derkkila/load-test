@@ -79,19 +79,19 @@ class BuyerTasks(BaseTaskSet):
 
 
 class CasualBrowser(HttpLocust):
-    weight = 100*0.75
+    weight = 100*0.70
     task_set = CasualBrowserTasks
     min_wait = 1000
     max_wait = 1000
 
 class Buyer(HttpLocust):
-    weight = 100*0.24
+    weight = 100*0.26
     task_set = BuyerTasks
     min_wait = 1000
     max_wait = 1000
 
 class SportTagDefectEncounterer(HttpLocust):
-    weight = 100*0.01
+    weight = 100*0.04
     task_set = SportTagDefectEncountererTasks
     min_wait = 1000
     max_wait = 1000
